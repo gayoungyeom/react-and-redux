@@ -45,6 +45,21 @@ export function createElement(tag, props, ...children) {
   }
 }
 
-export function render(vdom, container) {
-  container.appendChild(createDOM(vdom));
-}
+// export function render(vdom, container) {
+//   container.appendChild(createDOM(vdom));
+// }
+
+export const render = (function () {
+  let prevDom = null;
+
+  return function (vdom, container) {
+    //최초 실행 시
+    if (prevDom === null) {
+      prevDom = vdom;
+    }
+
+    //이전 UI가 존재 -> 새로 들어온 DOM 객체와 비교
+
+    container.appendChild(createDOM(vdom));
+  };
+})();

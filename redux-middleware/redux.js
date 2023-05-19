@@ -1,15 +1,15 @@
-export const actionCreator = type => payload => ({
+export const actionCreator = (type) => (payload) => ({
   type,
   payload,
 });
 
-export function createStore(reducer) {
+export function createStore(reducer, middlewares = []) {
   let state;
   const handlers = [];
 
   function dispatch(action) {
     state = reducer(state, action);
-    handlers.forEach(handler => handler());
+    handlers.forEach((handler) => handler());
   }
 
   function getState() {
@@ -25,6 +25,15 @@ export function createStore(reducer) {
     subscribe,
     dispatch,
   };
+
+  middlewares = Array.from(middlewares).reverse();
+  let lastDispatch = dispatch;
+
+  middlewares.forEach((middleware) => {
+    lastDispatch = middleware(store)(lastDispatch);
+  });
+
+  store.dispatch = lastDispatch;
 
   return store;
 }

@@ -16,8 +16,10 @@ const asyncRouter = (jobs) => (store) => (next) => (action) => {
 
 const asyncJobs = {
   [ASYNC_INCREASE_COUNTER]: function (store, action) {
+    store.dispatch(Actions.asyncRequest());
     setTimeout(() => {
       store.dispatch(Actions.increase(20));
+      store.dispatch(Actions.asyncResponse());
     }, 3000);
   },
 };
@@ -25,14 +27,16 @@ const asyncJobs = {
 const store = createStore(reducer, [logger, asyncRouter(asyncJobs)]);
 
 const counterDisplay = document.querySelector('#counter');
+const loadingMessage = document.querySelector('#loading');
 const btnIncrease = document.querySelector('#btn-increase');
 const btnAsyncIncrease = document.querySelector('#btn-async-increase');
 const btnDecrease = document.querySelector('#btn-decrease');
 const btnReset = document.querySelector('#btn-reset');
 
 store.subscribe(function () {
-  const { counter } = store.getState();
+  const { counter, request } = store.getState();
 
+  loadingMessage.style.visibility = request ? 'visible' : 'hidden';
   counterDisplay.textContent = counter;
 });
 

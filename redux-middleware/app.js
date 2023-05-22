@@ -2,6 +2,7 @@ import { createStore } from './redux.js';
 import * as Actions from './actions.js';
 import reducer from './reducer.js';
 import { ASYNC_INCREASE_COUNTER, SET_COUNTER } from './action-type.js';
+import { logger } from './logger.js';
 
 const middleware1 = (store) => (next) => (action) => {
   console.log('m1 => ', action);
@@ -27,7 +28,7 @@ const middleware3 = (store) => (next) => (action) => {
   }
 };
 
-const store = createStore(reducer, [middleware1, middleware2, middleware3]);
+const store = createStore(reducer, [logger]);
 
 const counterDisplay = document.querySelector('#counter');
 const btnIncrease = document.querySelector('#btn-increase');

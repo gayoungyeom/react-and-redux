@@ -5,23 +5,36 @@ const InitializeState = {
 };
 
 export default function reducer(state = InitializeState, action) {
-  switch(action.type) {
+  switch (action.type) {
     case Actions.INCREASE_COUNTER:
-      return { ...state, counter: state.counter === undefined ? 1 : state.counter + 1 };
+      if (action.payload) {
+        return {
+          ...state,
+          counter: state.counter + action.payload,
+        };
+      } else {
+        return {
+          ...state,
+          counter: state.counter === undefined ? 1 : state.counter + 1,
+        };
+      }
     case Actions.ASYNC_INCREASE_COUNTER:
       fetch(action.payload.url)
-        .then(response => response.json())
-        .then(result => {
+        .then((response) => response.json())
+        .then((result) => {
           return { ...state };
         })
-        .catch(err => {
+        .catch((err) => {
           return { ...state };
         });
     case Actions.DECREASE_COUNTER:
-      return { ...state, counter: state.counter === undefined ? 0 : state.counter - 1 };
+      return {
+        ...state,
+        counter: state.counter === undefined ? 0 : state.counter - 1,
+      };
     case Actions.SET_COUNTER:
       return { ...state, counter: action.payload };
     default:
-       return { ...state };
+      return { ...state };
   }
 }

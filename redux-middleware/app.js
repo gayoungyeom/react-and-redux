@@ -4,31 +4,25 @@ import reducer from './reducer.js';
 import { ASYNC_INCREASE_COUNTER, SET_COUNTER } from './action-type.js';
 import { logger } from './logger.js';
 
-const middleware1 = (store) => (next) => (action) => {
-  console.log('m1 => ', action);
-  next(action);
-};
+const asyncRouter = (jobs) => (store) => (next) => (action) => {
+  const matchJobs = Object.entries(jobs).find(([type]) => action.type === type);
 
-const middleware2 = (store) => (next) => (action) => {
-  console.log('m2 => ', action);
-  if (action.type === SET_COUNTER) {
-    action.payload = 100;
-  }
-  next(action);
-};
-
-const middleware3 = (store) => (next) => (action) => {
-  console.log('m3 => ', action);
-  if (action.type === ASYNC_INCREASE_COUNTER) {
-    setTimeout(() => {
-      next(Actions.increase());
-    }, 1000);
+  if (matchJobs) {
+    matchJobs[1](store, action);
   } else {
     next(action);
   }
 };
 
-const store = createStore(reducer, [logger]);
+const asyncJobs = {
+  [ASYNC_INCREASE_COUNTER]: function (store, action) {
+    setTimeout(() => {
+      store.dispatch(Actions.increase(20));
+    }, 3000);
+  },
+};
+
+const store = createStore(reducer, [logger, asyncRouter(asyncJobs)]);
 
 const counterDisplay = document.querySelector('#counter');
 const btnIncrease = document.querySelector('#btn-increase');
